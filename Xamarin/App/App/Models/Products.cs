@@ -5,7 +5,7 @@ namespace App.Models
     public class Product
 
     {
-
+        //Prueba
         [Key]
         public int ProductId { get; set; }
         [Required]
