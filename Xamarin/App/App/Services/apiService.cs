@@ -24,7 +24,7 @@
             }
 
 
-            bool isReachable = VerifyConnectionURL("http://xxx.azurewebsites.net/");
+            bool isReachable = VerifyConnectionURL("https://productosi220.azurewebsites.net/");
             if (!isReachable)
             {
                 return new Response
