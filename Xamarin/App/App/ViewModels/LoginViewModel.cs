@@ -5,6 +5,8 @@
     using System.Windows.Input;
     using Services;
     using Xamarin.Forms;
+    using global::App.Models;
+    using global::App.Views;
 
     public class LoginViewModel:BaseViewModel
     {
@@ -95,24 +97,51 @@
             var conexion = await this.ApiService.CheckConnection();
 
             if (!conexion.IsSuccess)
-
             {
-
                 this.IsRunning = false;
-
                 this.IsEnabled = true;
-
                 await Application.Current.MainPage.DisplayAlert(
-
                    "ERROR",
-
                    conexion.Message,
-
                    "Accept");
+                return;
+            }
+
+            TokenResponse token = await this.ApiService.GetToken(
+                  "https://productosi220.azurewebsites.net",
+                  this.Email,
+                  this.Password);
+            if (token == null)
+            {
+                this.IsRunning = false;
+                this.IsEnabled = true;
+                await Application.Current.MainPage.DisplayAlert(
+                   "ERROR",
+                   "Something was wrong, please try later.",
+                   "Accept");
+                return;
+            }
+
+            if (string.IsNullOrEmpty(token.AccessToken))
+            {
+                this.IsRunning = false;
+                this.IsEnabled = true;
+                await Application.Current.MainPage.DisplayAlert(
+                   "ERROR",
+                   token.ErrorDescription,
+                   "Accept");
+                this.Password = String.Empty;
 
                 return;
-
             }
+            MainViewModel mainViewModel = MainViewModel.GetInstance();
+            mainViewModel.Token = token.AccessToken;
+            mainViewModel.TokenType = token.TokenType;
+
+            Application.Current.MainPage = new NavigationPage(new ProductPage());
+            IsRunning = false;
+            IsEnabled = true;
+
         }
         #endregion
 
